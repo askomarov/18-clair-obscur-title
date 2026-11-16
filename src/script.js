@@ -61,6 +61,8 @@ const sizes = {
   height: window.innerHeight,
 };
 
+let updateTitleFit = () => {};
+
 window.addEventListener("resize", () => {
   // Update sizes
   sizes.width = window.innerWidth;
@@ -69,6 +71,9 @@ window.addEventListener("resize", () => {
   // Update camera
   camera.aspect = sizes.width / sizes.height;
   camera.updateProjectionMatrix();
+
+  // Keep title fully visible (contain); particles stay height-driven via FOV
+  updateTitleFit();
 
   // Update renderer
   renderer.setSize(sizes.width, sizes.height);
@@ -321,9 +326,13 @@ petalsGui.add(windVariation, "value", 0, 1, 0.01).name("windVariation");
  * Title
  */
 {
+  const titleWidth = 2;
+  const titleHeight = 1;
+  const titleFitMargin = 0.9; // room for parallax + edges
+
   // Mesh
   const title = new THREE.Mesh(
-    new THREE.PlaneGeometry(2, 1),
+    new THREE.PlaneGeometry(titleWidth, titleHeight),
     new THREE.MeshStandardNodeMaterial({
       transparent: true,
       alphaMap: textureLoader.load("./komarov.jpg"),
@@ -332,6 +341,20 @@ petalsGui.add(windVariation, "value", 0, 1, 0.01).name("windVariation");
   title.position.z = -0.05;
   title.receiveShadow = true;
   scene.add(title);
+
+  updateTitleFit = () => {
+    const distance = cameraBase.z - title.position.z;
+    const visibleHeight =
+      2 * Math.tan(THREE.MathUtils.degToRad(camera.fov * 0.5)) * distance;
+    const visibleWidth = visibleHeight * camera.aspect;
+    const fit = Math.min(
+      (visibleWidth * titleFitMargin) / titleWidth,
+      (visibleHeight * titleFitMargin) / titleHeight,
+      1,
+    );
+    title.scale.setScalar(fit);
+  };
+  updateTitleFit();
 
   // Color
   const colorA = uniform(color(0xe00b9c));
