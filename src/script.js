@@ -36,8 +36,22 @@ const canvas = document.querySelector("canvas.threejs");
 // Scene
 const scene = new THREE.Scene();
 
+// Loading
+const loaderElement = document.querySelector("#loader");
+const loaderBar = document.querySelector(".loader__bar");
+const loadingManager = new THREE.LoadingManager();
+
+loadingManager.onProgress = (_url, loaded, total) => {
+  if (!loaderBar || total === 0) return;
+  loaderBar.style.width = `${(loaded / total) * 100}%`;
+};
+
+loadingManager.onLoad = () => {
+  loaderElement?.classList.add("is-done");
+};
+
 // Texture loader
-const textureLoader = new THREE.TextureLoader();
+const textureLoader = new THREE.TextureLoader(loadingManager);
 
 /**
  * Sizes

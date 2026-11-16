@@ -4,6 +4,10 @@
     padding: 0;
 }
 
+html {
+    background: #111111;
+}
+
 html,
 body
 {
@@ -16,6 +20,41 @@ body
     top: 0;
     left: 0;
     outline: none;
+}
+
+.loader
+{
+    position: fixed;
+    inset: 0;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #111111;
+    opacity: 1;
+    transition: opacity 0.4s ease;
+}
+
+.loader.is-done
+{
+    opacity: 0;
+    pointer-events: none;
+}
+
+.loader__track
+{
+    width: min(220px, 60vw);
+    height: 2px;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.loader__bar
+{
+    width: 0%;
+    height: 100%;
+    background: #f4f0ff;
+    transition: width 0.15s ease-out;
 }
 
 .course-link
